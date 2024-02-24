@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: students
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -h localhost -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  my-app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy

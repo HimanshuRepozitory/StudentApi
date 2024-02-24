@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +19,12 @@ func StopAcceptingReqDuringShutdown(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("can't accept new requests"))
 		return
 	}
+	server.IncrementRunningReq()
 	c.Next()
+	server.DecrementRunningReq()
+}
+func DecrementRunningRequest() {
+	server.DecrementRunningReq()
 }
 
 func NewStudentsRoutes(router *gin.Engine) {
@@ -31,19 +35,16 @@ func NewStudentsRoutes(router *gin.Engine) {
 	router.PATCH("/students", Update)
 	router.DELETE("/students/:id", Delete)
 	router.GET("/", Default)
+
 }
 
 func Default(c *gin.Context) {
 
-	server.IncrementRunningReq()
-	// fmt.Println("active req --------->>>>>>", server.RunningReq())
-	time.Sleep(time.Second * 20)
-	server.DecrementRunningReq()
 	c.JSON(http.StatusOK, gin.H{"data": "the server is runnung on port number 8080 ..."})
 }
 
 func Create(c *gin.Context) {
-    server.IncrementRunningReq()
+
 	data := bean.StudentData{}
 	if err := c.BindJSON(&data); err != nil {
 		fmt.Println("Error in binding json : ", err)
@@ -56,7 +57,7 @@ func Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error in creating student INTERNAL SERVER ERROR!!", "error": err.Error()})
 		return
 	}
-    server.DecrementRunningReq()
+
 	c.JSON(http.StatusAccepted, gin.H{"message": "Student Admiteed successfully!!!", "success": true, "data": student})
 }
 

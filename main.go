@@ -34,7 +34,6 @@ func main() {
 
 	router := gin.Default()
 
-	
 	controller.NewStudentsRoutes(router)
 
 	

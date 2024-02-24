@@ -9,7 +9,7 @@ import (
 )
 
 func DbConnection() (*sql.DB, error) {
-	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/students?sslmode=disable")
+	db, err := sql.Open("postgres", "postgres://postgres:postgres@postgres:5432/students?sslmode=disable")
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func DbConnection() (*sql.DB, error) {
 // MIGRATIONS UP
 func RunMigrations() error {
 	m, err := migrate.New(
-		"file://db/migrations", "postgres://postgres:postgres@localhost:5432/students?sslmode=disable")
+		"file://db/migrations", "postgres://postgres:postgres@postgres:5432/students?sslmode=disable")
 
 	if err != nil {
 		return err
